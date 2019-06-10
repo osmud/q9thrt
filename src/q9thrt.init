@@ -1,0 +1,88 @@
+#!/bin/sh /etc/rc.common
+
+# *************************************************************************
+# Copyright 2019 Global Cyber Aliance
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# *************************************************************************
+
+START=70
+NAME=q9thrt
+PROG=/etc/q9thrt/threat_filter.sh
+
+MUD_FILE_DIRECTORY="/etc/q9thrt/state/mudfiles"
+Q9_RULE_STATE_DIRECTORY="/etc/q9thrt/state/rules"
+DHCP_EVENT_FILE="/var/log/dhcp_q9thrt_log.txt"
+PID_FILE="/var/run/q9thrt.pid"
+Q9_LOG_FILE="q9thrt.log"
+Q9_ERR_FILE="q9thrt.err"
+Q9_AUDIT_FILE="q9thrt_audit.log"
+Q9_FAIL_FILE="q9thrt_event_failure.log"
+Q9_LOG_DIR="/etc/q9thrt/logs"
+Q9_ARCHIVE_DIR="/etc/q9thrt/logArchive"
+Q9_TMP_DIR="/tmp/q9thrt_tmp_dir"
+
+boot() {
+        mkdir -p /var/run
+        mkdir -p /var/log
+        mkdir -p $Q9_LOG_DIR
+        mkdir -p $Q9_ARCHIVE_DIR
+        mkdir -p $MUD_FILE_DIRECTORY
+        mkdir -p $Q9_RULE_STATE_DIRECTORY
+        mkdir -p $Q9_TMP_DIR
+        touch $DHCP_EVENT_FILE
+        touch $Q9_LOG_DIR/$OSMUD_LOG_FILE
+        touch $Q9_LOG_DIR/$OSMUD_FAIL_FILE
+        touch $Q9_LOG_DIR/$OSMUD_AUDIT_FILE
+        touch $MUD_FILE_DIRECTORY/mudStateFile.txt
+        
+        start_service
+}
+
+start_service() {
+	echo "Starting $NAME..."
+	$PROG -e $DHCP_EVENT_FILE -m $MUD_FILE_DIRECTORY -l $Q9_LOG_FILE -a $Q9_AUDIT_FILE -f $Q9_FAIL_FILE -g $Q9_ARCHIVE_DIR -o $Q9_LOG_DIR -s $Q9_RULE_STATE_DIRECTORY -t $Q9_TMP_DIR > $Q9_LOG_DIR/$Q9_LOG_FILE 2> $Q9_LOG_DIR/$Q9_ERR_FILE < /dev/null &
+
+	echo PID $!
+	echo $! > $PID_FILE
+}
+
+start() {
+        mkdir -p /var/run
+        mkdir -p /var/log
+        mkdir -p $Q9_LOG_DIR
+        mkdir -p $Q9_ARCHIVE_DIR
+        mkdir -p $MUD_FILE_DIRECTORY
+        mkdir -p $Q9_RULE_STATE_DIRECTORY
+        mkdir -p $Q9_TMP_DIR
+        touch $DHCP_EVENT_FILE
+        touch $Q9_LOG_DIR/$OSMUD_LOG_FILE
+        touch $Q9_LOG_DIR/$OSMUD_FAIL_FILE
+        touch $Q9_LOG_DIR/$OSMUD_AUDIT_FILE
+        touch $MUD_FILE_DIRECTORY/mudStateFile.txt
+
+        start_service
+}
+
+stop() {
+        kill $(cat /var/run/q9thrt.pid)
+        kill $(pgrep -f q9thrt)
+}
+
+reload() {
+        kill $(cat /var/run/q9thrt.pid)
+        kill $(pgrep -f q9thrt)
+        start_service
+}
+

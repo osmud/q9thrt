@@ -1,0 +1,118 @@
+{
+  "ietf-mud:mud": {
+    "mud-version": 1,
+    "mud-url": "https://mud.threatstop.com/bankingmalware",
+    "last-update": "2019-02-11T17:20:15+00:00",
+    "cache-validity": 14400,
+    "is-supported": true,
+    "systeminfo": "Banking Malware ACL",
+    "mfg-name": "ThreatSTOP",
+    "documentation": "https://mud.threatstop.com/docs/bankingmalware.txt",
+    "model-name": "bankingmalware",
+    "from-device-policy": {
+      "access-lists": {
+        "access-list": [
+          {
+            "name": "mud-65043-dnsfr"
+          },
+          {
+            "name": "mud-65043-ipfr"
+          }
+        ]
+      }
+    },
+    "to-device-policy": {
+      "access-lists": {
+        "access-list": [
+          {
+            "name": "mud-65043-dnsto"
+          },
+          {
+            "name": "mud-65043-ipto"
+          }
+        ]
+      }
+    }
+  },
+  "ietf-access-control-list:acls": {
+    "acl": [
+      {
+        "name": "mud-65043-dnsto",
+        "type": "ipv4-acl-type",
+        "aces": {
+          "ace": [
+            {
+              "name": "c10-todev",
+              "matches": {
+                "ipv4": {
+                  "ietf-acldns:src-dnsname": "some-bad-domain.com"
+                }
+              },
+              "actions": {
+                "forwarding": "deny"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "mud-65043-dnsfr",
+        "type": "ipv4-acl-type",
+        "aces": {
+          "ace": [
+            {
+              "name": "c10-frdev",
+              "matches": {
+                "ipv4": {
+                  "ietf-acldns:dst-dnsname": "some-bad-domain.com"
+                }
+              },
+              "actions": {
+                "forwarding": "deny"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "mud-65043-ipto",
+        "type": "ipv4-acl-type",
+        "aces": {
+          "ace": [
+            {
+              "name": "c10-todev",
+              "matches": {
+                "destination-ipv4-network": {
+                  "net:ipv4-prefix": "59.188.3.145/32"
+                }
+              },
+              "actions": {
+                "forwarding": "deny"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "mud-65043-ipfr",
+        "type": "ipv4-acl-type",
+        "aces": {
+          "ace": [
+            {
+              "name": "c10-frdev",
+              "matches": {
+                "source-ipv4-network": {
+                  "net:ipv4-prefix": "59.188.3.145/32"
+                }
+              },
+              "actions": {
+                "forwarding": "deny"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
+

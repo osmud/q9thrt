@@ -1,0 +1,17 @@
+#
+# Add this line below to cron using the command "crontab -e"
+#
+# NOTE: Cron is not enabled on the router by default. There are two commands that must be run:
+#    #> /etc/init.d/cron start
+#    #> /etc/init.d/cron enable
+#
+# Cron will not start if there is no crontab defined (i.e. /etc/crontabs/ is empty)!
+#
+0 * * * * /etc/q9thrt/remove_expired_rules.sh >> /tmp/Q9_CRON.log 2>&1
+
+# Reboot at 4:30am every day
+# Note: To avoid infinite reboot loop, wait 70 seconds
+# and touch a file in /etc so clock will be set
+# properly to 4:31 on reboot before cron starts.
+#
+30 4 * * * sleep 70 && touch /etc/banner && reboot
